@@ -1,0 +1,256 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @unique
+  firstName String
+  lastName  String
+  sex       String?
+  address   String?
+  birthdate String?
+  phone     String?
+  email     String   @unique
+  password  String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Appointments RoomAppointments[]
+}
+
+model Admin {
+  id        String   @id @unique @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Rooms {
+  id          String   @id @unique @default(uuid())
+  name        String
+  type        String
+  description String
+  imagesUrl   String[]
+  status      String   @default("Available")
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  amenities Amenities[]        @relation("RoomAmenities")
+  features  RoomFeature[]
+  schedules EmployeeSchedule[]
+
+  Appointments RoomAppointments[]
+}
+
+model RoomFeature {
+  id             String @id @unique @default(uuid())
+  numberOfPerson Int
+  price          Float
+  roomId         String
+  room           Rooms  @relation(fields: [roomId], references: [id])
+}
+
+model Amenities {
+  id        String   @id @unique @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rooms Rooms[] @relation("RoomAmenities")
+}
+
+model Food {
+  id          String   @id @unique @default(uuid())
+  name        String
+  type        String
+  description String
+  price       Float
+  imagesUrl   String[]
+  stock       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  caterings Catering[] @relation("CateringMenus")
+  events    Events[]   @relation("EventMenus")
+}
+
+model Inclusions {
+  id        String   @id @unique @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  caterings Catering[] @relation("CateringInclusions")
+}
+
+model Catering {
+  id        String   @id @unique @default(uuid())
+  name      String
+  type      String
+  stock     Float
+  status    String   @default("Available")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inclusions Inclusions[]      @relation("CateringInclusions")
+  features   CateringFeature[]
+  menus      Food[]            @relation("CateringMenus")
+  addons     AddOns[]
+}
+
+model CateringFeature {
+  id             String   @id @unique @default(uuid())
+  numberOfPerson Int
+  price          Float
+  cateringId     String
+  catering       Catering @relation(fields: [cateringId], references: [id])
+}
+
+model AddOns {
+  id         String   @id @unique @default(uuid())
+  name       String
+  price      Float
+  cateringId String
+  catering   Catering @relation(fields: [cateringId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Employees {
+  id          String @id @unique @default(uuid())
+  firstName   String
+  lastName    String
+  address     String
+  birthdate   String
+  age         String
+  sex         String
+  civilStatus String
+  email       String @unique
+  phoneNumber String
+  position    String
+  status      String
+  dateHired   String
+  imageUrl    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payroll    Payroll[]
+  attendance Attendance[]
+  schedule   EmployeeSchedule[]
+}
+
+model Payroll {
+  id              String    @id @unique @default(uuid())
+  employeeId      String
+  employee        Employees @relation(fields: [employeeId], references: [id])
+  daysPresent     String
+  salary          Float
+  sss             Float
+  philhealth      Float
+  pagibig         Float
+  bir             Float
+  otherDeductions Float
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  attendance Attendance[]
+}
+
+model Attendance {
+  id         String    @id @unique @default(uuid())
+  employeeId String
+  employee   Employees @relation(fields: [employeeId], references: [id])
+  date       String
+  timeIn     String
+  timeOut    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  payroll Payroll[]
+}
+
+model EmployeeSchedule {
+  id         String   @id @unique @default(uuid())
+  employeeId String
+  date       String
+  roomId     String
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  employee Employees @relation(fields: [employeeId], references: [id])
+  room     Rooms     @relation(fields: [roomId], references: [id])
+}
+
+model EventsInclusions {
+  id        String   @id @unique @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events Events[] @relation("EventsInclusions")
+}
+
+model Events {
+  id        String   @id @unique @default(uuid())
+  name      String
+  type      String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inclusions EventsInclusions[] @relation("EventsInclusions")
+  features   EventsFeature[]
+  menus      Food[]             @relation("EventMenus")
+  addons     EventsAddOns[]
+}
+
+model EventsFeature {
+  id             String @id @unique @default(uuid())
+  numberOfPerson Int
+  price          Float
+  eventId        String
+  event          Events @relation(fields: [eventId], references: [id])
+}
+
+model EventsAddOns {
+  id        String   @id @unique @default(uuid())
+  name      String
+  price     Float
+  eventId   String
+  event     Events   @relation(fields: [eventId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RoomAppointments {
+  id        String   @id @unique @default(uuid())
+  checkIn   String
+  checkOut  String
+  guest     String
+  price     Float
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  roomId String
+  room   Rooms  @relation(fields: [roomId], references: [id])
+}
