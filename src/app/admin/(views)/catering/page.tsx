@@ -3,7 +3,7 @@ import Heading from "@/components/globals/heading";
 import db from "@/lib/db";
 import Link from "next/link";
 import React from "react";
-import CateringClient from "./components/page";
+import CateringClient from "./components/client";
 
 const Catering = async () => {
   const caterings = await db.catering.findMany({

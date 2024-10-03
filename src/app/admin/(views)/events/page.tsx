@@ -3,7 +3,7 @@ import Heading from "@/components/globals/heading";
 import db from "@/lib/db";
 import Link from "next/link";
 import React from "react";
-import EventClient from "./components/page";
+import EventClient from "./components/client";
 
 const Events = async () => {
   const events = await db.events.findMany({
