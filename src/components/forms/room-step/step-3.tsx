@@ -12,7 +12,7 @@ import { Modal } from "@/components/ui/modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Rooms } from "@prisma/client";
+import { RoomFeature, Rooms } from "@prisma/client";
 import { getRoomAppointment } from "@/actions/appointment";
 import { toast } from "sonner";
 import {
@@ -34,6 +34,10 @@ interface Event {
   price?: number;
 }
 
+interface RoomsWithFeatures extends Rooms {
+  features: RoomFeature[];
+}
+
 const Step3 = ({
   nextStep,
   prevStep,
@@ -41,7 +45,7 @@ const Step3 = ({
 }: {
   nextStep: () => void;
   prevStep: () => void;
-  roomData: Rooms | null;
+  roomData: RoomsWithFeatures | null;
 }) => {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState(false);
