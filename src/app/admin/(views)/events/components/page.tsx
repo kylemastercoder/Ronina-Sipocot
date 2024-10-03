@@ -28,7 +28,9 @@ const EventClient: React.FC<EventClientProps> = ({ data, index }) => {
 
     return () => clearTimeout(timer);
   }, [index]);
+
   const router = useRouter();
+
   return (
     <Card
       className={cn(
@@ -39,30 +41,48 @@ const EventClient: React.FC<EventClientProps> = ({ data, index }) => {
       )}
     >
       <CardContent className="flex flex-col p-0">
-        {/* <ImageSlider urls={data.imagesUrl} /> */}
         <div className="px-4 pb-4">
           <div className="flex items-center mt-4 gap-x-2">
-            <h3 className="text-2xl font-bold">
-              {data.type}: {data.name}
-            </h3>
-            <Badge variant={data.status === "Available" ? "default" : "secondary"}>{data.status}</Badge>
+            {data?.type && data?.name && (
+              <h3 className="text-2xl font-bold">
+                {data.type}: {data.name}
+              </h3>
+            )}
+            <Badge
+              variant={data?.status === "Available" ? "default" : "secondary"}
+            >
+              {data?.status || "Unavailable"}
+            </Badge>
           </div>
           <p className="text-sm my-1">
-            From {formatPrice(data.features[0].price)} good for{" "}
-            {data.features[0].numberOfPerson} pax <br />
-            <span className="capitalize font-semibold">
-              additional pax:
-            </span>{" "}
-            {formatPrice(data.features[1].price)}/pax
+            {data.features && data.features.length > 0 ? (
+              <>
+                From {formatPrice(data.features[0]?.price)} good for{" "}
+                {data.features[0]?.numberOfPerson} pax <br />
+                <span className="capitalize font-semibold">
+                  additional pax:
+                </span>{" "}
+                {data.features.length > 1
+                  ? formatPrice(data.features[1]?.price)
+                  : "N/A"}
+                /pax
+              </>
+            ) : (
+              "No features available"
+            )}
           </p>
           <Separator className="my-2" />
           <ul>
             <p className="font-semibold">Inclusions: </p>
-            {data.inclusions.map((inclusion) => (
-              <li className="text-sm" key={inclusion.id}>
-                • {inclusion.name}
-              </li>
-            ))}
+            {data.inclusions && data.inclusions.length > 0 ? (
+              data.inclusions.map((inclusion) => (
+                <li className="text-sm" key={inclusion.id}>
+                  • {inclusion.name}
+                </li>
+              ))
+            ) : (
+              <li className="text-sm">No inclusions available</li>
+            )}
           </ul>
           <Button
             onClick={() => router.push(`/admin/events/${data.id}`)}
