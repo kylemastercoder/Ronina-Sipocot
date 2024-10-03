@@ -73,7 +73,7 @@ const SpecificRoom: React.FC<SpecificRoomProps> = ({ room, menus }) => {
           </div>
           {room?.status === "Available" ? (
             <Button
-              onClick={() => router.push(`/book-room/${room?.id}`)}
+              onClick={() => router.push(`/book-now?id=${room?.id}`)}
               size="sm"
             >
               Book Now

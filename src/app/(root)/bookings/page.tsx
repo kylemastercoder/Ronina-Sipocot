@@ -1,4 +1,4 @@
-import Heading from "@/components/globals/heading";
+
 import db from "@/lib/db";
 import React from "react";
 import { format } from "date-fns";

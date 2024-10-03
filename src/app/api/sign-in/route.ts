@@ -45,5 +45,5 @@ export async function POST(request: Request) {
     .sign(secret);
 
   // Respond with it
-  return Response.json({ token: jwt });
+  return new Response(JSON.stringify({ token: jwt }), { status: 200 });
 }

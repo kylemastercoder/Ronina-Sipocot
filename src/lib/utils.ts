@@ -31,6 +31,7 @@ export function parseAddress(address: string) {
     barangay,
   };
 }
+
 export function formatPrice(
   price: number | string,
   options: {
