@@ -75,7 +75,7 @@ export const approveAppointment = async (id: string) => {
       },
     });
 
-    const room = await db.rooms.update({
+    await db.rooms.update({
       where: {
         id: roomAppointment.roomId,
       },

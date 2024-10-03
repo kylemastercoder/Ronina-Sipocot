@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

@@ -5,8 +5,6 @@ import { format } from "date-fns";
 import { BookingColumn } from "./components/column";
 import { formatPrice } from "@/lib/utils";
 import BookingClient from "./components/client";
-import BreadcrumbBanner from "@/components/globals/bread-crumb-banner";
-import Container from "@/components/globals/container";
 
 const MyBookings = async () => {
   const bookings = await db.roomAppointments.findMany({

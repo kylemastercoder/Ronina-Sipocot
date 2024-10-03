@@ -282,7 +282,7 @@ const AdminDashboard = async () => {
               </TableHeader>
               <TableBody>
                 {recentTransactions.map((transaction) => (
-                  <TableRow>
+                  <TableRow key={transaction.id}>
                     <TableCell>
                       <div className="font-medium">
                         {transaction.user.firstName} {transaction.user.lastName}
