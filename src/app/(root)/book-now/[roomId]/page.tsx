@@ -3,22 +3,13 @@ import React from "react";
 import RoomAppointmentForm from "@/components/forms/room-appointment-form";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-interface PageProps {
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
-}
-
-const BookRooms = async ({ searchParams }: PageProps) => {
+const BookRooms = async ({ params }: { params: { roomId: string } }) => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  const id = Array.isArray(searchParams.id)
-    ? searchParams.id[0]
-    : searchParams.id || "";
 
   const room = await db.rooms.findUnique({
     where: {
-      id,
+      id: params.roomId,
     },
     include: {
       amenities: true,
