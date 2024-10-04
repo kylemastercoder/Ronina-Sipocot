@@ -2,55 +2,46 @@
 "use server";
 
 import db from "@/lib/db";
-import { UpdateProfileValidation } from "@/lib/validators";
+import { UpdateProfileValidation, UserSchema } from "@/lib/validators";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import axios from "axios";
 import { z } from "zod";
+import bcryptjs from "bcryptjs";
 
 export const createUser = async (
-  email: string,
-  familyName: string,
-  givenName: string,
-  orgCode: string
+  values: z.infer<typeof UserSchema>,
+  clerkId: string
 ) => {
-  try {
-    const response = await axios.post(
-      `${process.env.KINDE_ISSUER_URL}/api/v1/user`,
-      {
-        profile: {
-          given_name: givenName,
-          family_name: familyName,
-        },
-        organization_code: orgCode,
-        identities: [
-          {
-            type: "email",
-            details: {
-              email: email,
-            },
-          },
-        ],
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${process.env.KINDE_ACCESS_TOKEN}`,
-        },
-      }
-    );
+  const validatedField = UserSchema.safeParse(values);
 
-    return response.data;
+  if (!validatedField.success) {
+    const errors = validatedField.error.errors.map((err) => err.message);
+    return { error: `Validation Error: ${errors.join(", ")}` };
+  }
+
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+  } = validatedField.data;
+
+  const hashedPassword = await bcryptjs.hash(password, 10);
+
+  try {
+    await db.user.create({
+      data: {
+        id: clerkId,
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+      },
+    });
+    return { success: "User created successfully" };
   } catch (error: any) {
-    console.error("Error:", error);
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(
-        error.response.data?.message || "Registration failed. Please try again."
-      );
-    } else {
-      console.log(error);
-      throw new Error("An unexpected error occurred.");
-    }
+    return {
+      error: `Failed to create user. Please try again. ${error.message || ""}`,
+    };
   }
 };
 

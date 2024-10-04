@@ -9,9 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { useClerk } from "@clerk/nextjs";
 
 interface UserAccountProps {
   email: string;
@@ -19,6 +19,7 @@ interface UserAccountProps {
 }
 
 const UserAccount = ({ email, name }: UserAccountProps) => {
+  const { signOut } = useClerk();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,9 +45,10 @@ const UserAccount = ({ email, name }: UserAccountProps) => {
           <DropdownMenuItem className="cursor-pointer" asChild>
             <Link href="/bookings">My Bookings</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer" asChild>
-            <LogoutLink>Log out</LogoutLink>
-          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => signOut({ redirectUrl: "/" })}
+          >Logout</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

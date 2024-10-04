@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { getConnections } from "@/actions/misc";
 import {
   Tooltip,
   TooltipContent,
@@ -8,19 +7,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import EmailLogin from "@/components/forms/email-login";
 
-const SignIn = async (props: {
-  searchParams: { orgCode?: string; team_id?: string };
-}) => {
-  const connections = await getConnections();
-  const emailConnectionId = connections?.find(
-    (conn: any) => conn.strategy === "email:otp"
-  )?.id;
-  console.log(connections);
+const SignIn = () => {
   return (
     <div className="flex flex-col w-full">
       <h2 className="md:text-4xl text-2xl font-bold">Sign In</h2>
@@ -28,41 +19,39 @@ const SignIn = async (props: {
         Enter all the informations associated with your registered account.
       </p>
       <div className="grid gap-4 w-full mt-5">
-        <EmailLogin
-          emailConnectionId={emailConnectionId}
-          orgCode={props.searchParams.orgCode}
-          teamId={props.searchParams.team_id}
-        />
+        <EmailLogin />
         <div className="flex items-center gap-4 justify-center">
           <div className="flex-1 border-t border-gray-500"></div>
           <span>Or continue with</span>
           <div className="flex-1 border-t border-gray-500"></div>
         </div>
         <div className="flex items-center gap-2 w-full">
-          {connections
-            ?.filter((conn: any) => conn.strategy.includes("oauth2"))
-            ?.map((connection: any) => (
-              <LoginLink
-                className="w-full flex-1"
-                key={connection.id}
-                orgCode={props.searchParams.orgCode}
-                postLoginRedirectURL={`/profile`}
-                authUrlParams={{
-                  connection_id: connection.id,
-                }}
-              >
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" className="w-full">
-                        <SignInButtonIcon strategy={connection.strategy} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>{connection.display_name}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </LoginLink>
-            ))}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <SignInButtonIcon strategy={"oauth2:facebook"} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Facebook</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <SignInButtonIcon strategy={"oauth2:google"} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Facebook</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <SignInButtonIcon strategy={"oauth2:microsoft"} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Facebook</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       <div className="mt-4 text-center text-sm">

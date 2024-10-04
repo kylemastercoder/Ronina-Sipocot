@@ -18,6 +18,14 @@ body,
   }
 }
 
+.shad-otp {
+  @apply w-full flex justify-center !important;
+}
+
+.shad-otp-slot {
+  @apply font-bold justify-center flex border border-gray-500 rounded-lg size-[80px] gap-4 !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -105,7 +113,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .image-border {
   border: 50px solid;
-  border-image-source: url('/images/catering-border-dark.png');
+  border-image-source: url("/images/catering-border-dark.png");
   border-image-slice: 50;
   border-image-repeat: round;
 }

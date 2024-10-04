@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { IconMenu } from "@tabler/icons-react";
 import CTA from "./cta";
 import UserAccount from "./user-account";
+import { useUser } from "@clerk/nextjs";
 
 const sliderData = [
   {
@@ -95,15 +96,8 @@ export type CurrentSlide = {
   index: number;
 };
 
-const Navbar = ({
-  fullName,
-  email,
-  id,
-}: {
-  fullName: string;
-  email: string;
-  id?: string;
-}) => {
+const Navbar = () => {
+  const { user } = useUser();
   const [data, setData] = useState<Data[]>(sliderData.slice(1));
   const [transitionData, setTransitionData] = useState<Data>(sliderData[0]);
   const [currentSlideData, setCurrentSlideData] = useState<CurrentSlide>({
@@ -120,7 +114,7 @@ const Navbar = ({
             currentSlide={currentSlideData}
           />
           <div className="absolute z-20 h-full w-full">
-            <Header email={email} id={id ?? ""} fullName={fullName} />
+            <Header />
             <div className="grid h-full w-full grid-cols-1 md:grid-cols-10">
               <div className="col-span-4 mb-3 h-full flex-1 flex flex-col justify-end px-5 md:mb-0 md:justify-center md:px-10">
                 <SlideInfo
@@ -175,7 +169,14 @@ const Navbar = ({
                   </Link>
                 ))}
               </nav>
-              {id ? <UserAccount email={email} name={fullName} /> : <CTA />}
+              {user ? (
+                <UserAccount
+                  email={user.emailAddresses[0].emailAddress}
+                  name={user.firstName + " " + user.lastName}
+                />
+              ) : (
+                <CTA />
+              )}
             </div>
             <Sheet>
               <SheetTrigger className="md:hidden block">
@@ -200,7 +201,14 @@ const Navbar = ({
                       </Link>
                     ))}
                   </nav>
-                  {id ? <UserAccount email={email} name={fullName} /> : <CTA />}
+                  {user ? (
+                    <UserAccount
+                      email={user.emailAddresses[0].emailAddress}
+                      name={user.firstName + " " + user.lastName}
+                    />
+                  ) : (
+                    <CTA />
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
@@ -211,16 +219,9 @@ const Navbar = ({
   }
 };
 
-export const Header = ({
-  fullName,
-  email,
-  id,
-}: {
-  fullName: string;
-  email: string;
-  id?: string;
-}) => {
+export const Header = () => {
   const pathname = usePathname();
+  const { user } = useUser();
   return (
     <div className="sticky z-50 backdrop-blur inset-x-0 top-0 py-5">
       <Container>
@@ -244,7 +245,14 @@ export const Header = ({
                 </Link>
               ))}
             </nav>
-            {id ? <UserAccount email={email} name={fullName} /> : <CTA />}
+            {user ? (
+              <UserAccount
+                email={user.emailAddresses[0].emailAddress}
+                name={user.firstName + " " + user.lastName}
+              />
+            ) : (
+              <CTA />
+            )}
           </div>
           <Sheet>
             <SheetTrigger className="md:hidden block">
@@ -269,7 +277,14 @@ export const Header = ({
                     </Link>
                   ))}
                 </nav>
-                {id ? <UserAccount email={email} name={fullName} /> : <CTA />}
+                {user ? (
+                  <UserAccount
+                    email={user.emailAddresses[0].emailAddress}
+                    name={user.firstName + " " + user.lastName}
+                  />
+                ) : (
+                  <CTA />
+                )}
               </div>
             </SheetContent>
           </Sheet>

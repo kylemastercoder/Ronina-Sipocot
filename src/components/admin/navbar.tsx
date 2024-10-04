@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
 import { CircleUser, Menu, Package2, Search } from "lucide-react";
@@ -14,28 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
 
 const Navbar = () => {
+  const { signOut } = useClerk();
   const pathname = usePathname();
-  const router = useRouter();
-  useEffect(() => {
-    const accessKey =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem("accessKey")
-        : null;
-    if (!accessKey) {
-      router.replace("/admin");
-    }
-  }, [router]);
-
-  const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("accessKey");
-      router.replace("/admin");
-    }
-  };
-
   const navLinks = [
     { href: "/admin/dashboard", label: "Overview" },
     { href: "/admin/rooms", label: "Rooms" },
@@ -127,7 +111,9 @@ const Navbar = () => {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Messages</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut({ redirectUrl: "/admin/auth/sign-in" })}>
+              Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

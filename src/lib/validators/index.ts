@@ -19,6 +19,40 @@ export type UserRegistrationProps = {
   phoneNumber: string;
 };
 
+export const UserSchema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  email: z
+    .string()
+    .email({ message: "Enter a valid email address" })
+    .min(1, { message: "Email address is required" }),
+  password: z
+    .string()
+    .min(8, { message: "Your password must be atleast 8 characters long" })
+    .max(64, {
+      message: "Your password can not be longer then 64 characters long",
+    })
+    .refine(
+      (value) => /^[a-zA-Z0-9_.-]*$/.test(value ?? ""),
+      "password should contain only alphabets and numbers"
+    ),
+});
+
+export const UserLoginSchema = z.object({
+  email: z.string().min(1, {
+    message: "Email address is required.",
+  }),
+  password: z.string().min(1, {
+    message: "Password is required.",
+  }),
+});
+
+export const EmailVerificationSchema = z.object({
+  otpCode: z.string().min(1, {
+    message: "OTP code is required.",
+  }),
+});
+
 export const UserRegistrationSchema: ZodType<UserRegistrationProps> = z
   .object({
     firstName: z
@@ -68,16 +102,6 @@ export type UserLoginProps = {
   email: string;
   password: string;
 };
-
-export const UserLoginSchema: ZodType<UserLoginProps> = z.object({
-  email: z.string().email({ message: "You did not enter a valid email" }),
-  password: z
-    .string()
-    .min(8, { message: "Your password must be atleast 8 characters long" })
-    .max(64, {
-      message: "Your password can not be longer then 64 characters long",
-    }),
-});
 
 export const UpdateProfileValidation = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),

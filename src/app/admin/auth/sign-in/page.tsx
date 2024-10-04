@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,13 +9,59 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useFormState } from "react-dom";
-import loginAction from "../sign-in-action";
+import { useSignIn } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { UserLoginSchema } from "@/lib/validators";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Form } from "@/components/ui/form";
+import CustomFormField from "@/components/globals/custom-form-field";
+import { FormFieldType } from "@/constants";
+import { Loader2 } from "lucide-react";
 
 const AdminSignIn = () => {
-  const [error, formAction] = useFormState(loginAction, undefined);
+  const { isLoaded, signIn, setActive } = useSignIn();
+  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof UserLoginSchema>>({
+    resolver: zodResolver(UserLoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof UserLoginSchema>) => {
+    if (!isLoaded) return;
+
+    try {
+      setIsPending(true);
+      const signInAttempt = await signIn.create({
+        identifier: values.email,
+        password: values.password,
+      });
+
+      // If sign-in process is complete, set the created session as active and redirect the user
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.push("/admin/dashboard");
+      } else {
+        console.error(JSON.stringify(signInAttempt, null, 2));
+      }
+    } catch (error: any) {
+      console.error(JSON.stringify(error, null, 2));
+      toast.error(
+        error.message || "No user found with the provided credentials."
+      );
+    } finally {
+      setIsPending(false);
+    }
+  };
+
   return (
     <Dialog open>
       <DialogContent>
@@ -24,14 +71,37 @@ const AdminSignIn = () => {
             Please login your admin account to access the dashboard.
           </DialogDescription>
         </DialogHeader>
-        <div>
-          <form action={formAction} className="space-y-3">
-            <Input type="email" name="email" placeholder="Email Address" />
-            <Input type="password" name="password" placeholder="Password" />
-            <Button className="w-full" type="submit">Sign In</Button>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-3">
+            <div className="grid gap-2">
+              <CustomFormField
+                control={form.control}
+                name="email"
+                placeholder="jdelacruz@gmail.com"
+                disabled={isPending}
+                isRequired
+                label="Email Address"
+                fieldType={FormFieldType.INPUT}
+              />
+            </div>
+            <div className="grid gap-2">
+              <CustomFormField
+                control={form.control}
+                name="password"
+                placeholder="********"
+                disabled={isPending}
+                isRequired
+                type="password"
+                label="Password"
+                fieldType={FormFieldType.INPUT}
+              />
+            </div>
+            <Button disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 w-4 h-4 animate-spin" />}
+              Continue
+            </Button>
           </form>
-        </div>
-        {error && <p className="text-center text-red-500">{error}</p>}
+        </Form>
       </DialogContent>
     </Dialog>
   );
