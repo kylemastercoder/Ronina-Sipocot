@@ -25,6 +25,31 @@ export const getRoomAppointment = async () => {
   }
 };
 
+export const getRoomAppointmentComplete = async () => {
+  try {
+    const roomAppointment = await db.roomAppointments.findMany({
+      include: {
+        user: true,
+        room: true,
+      },
+      where: {
+        status: "Confirmed",
+      },
+    });
+
+    return {
+      success: "Room appointments displayed successfully!",
+      roomAppointment,
+    };
+  } catch (error: any) {
+    return {
+      error: `Failed to display room appointments. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
+
 export const createRoomAppointment = async (
   checkIn: string,
   checkOut: string,
@@ -32,8 +57,19 @@ export const createRoomAppointment = async (
   userId: string,
   roomId: string,
   price: string,
+  paymentMethod: string,
+  paymentNumber: string
 ) => {
-  if (!checkIn || !checkOut || !guest || !userId || !roomId || !price) {
+  if (
+    !checkIn ||
+    !checkOut ||
+    !guest ||
+    !userId ||
+    !roomId ||
+    !price ||
+    !paymentMethod ||
+    !paymentNumber
+  ) {
     return {
       error: "All fields are required!",
     };
@@ -48,6 +84,8 @@ export const createRoomAppointment = async (
         userId: userId,
         roomId: roomId,
         price: parseFloat(price),
+        paymentMethod: paymentMethod,
+        proofOfPayment: paymentNumber,
       },
     });
 
@@ -80,8 +118,8 @@ export const approveAppointment = async (id: string) => {
         id: roomAppointment.roomId,
       },
       data: {
-        status: "Not Available"
-      }
+        status: "Not Available",
+      },
     });
 
     return {
@@ -95,7 +133,7 @@ export const approveAppointment = async (id: string) => {
       }`,
     };
   }
-}
+};
 
 export const declineAppointment = async (id: string) => {
   try {
@@ -119,4 +157,4 @@ export const declineAppointment = async (id: string) => {
       }`,
     };
   }
-}
+};

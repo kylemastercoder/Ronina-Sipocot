@@ -6,15 +6,13 @@ import {
   IconPhoneFilled,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 
 const Footer = () => {
   return (
     <div className="bg-black">
       <Container className="grid grid-cols-1 md:px-0 px-10 gap-10 md:gap-0 md:grid-cols-11 py-10">
-        <div className="flex col-span-1 md:col-span-3 flex-col">
+        <div className="flex col-span-1 md:col-span-7 flex-col">
           <p className="text-xl font-bold">Contact Us</p>
           <div className="flex items-center gap-3 mt-2 md:mt-5">
             <IconLocationFilled />
@@ -42,20 +40,6 @@ const Footer = () => {
           <Link href="/room-reservation">FAQs</Link>
           <Link href="/room-reservation">Terms & Conditions</Link>
           <Link href="/room-reservation">Privacy Policy</Link>
-        </div>
-        <div className="flex col-span-1 md:col-span-4 flex-col">
-          <p className="text-xl font-bold">Newsletter</p>
-          <p className="text-muted-foreground text-sm mb-3">
-            Join our community by subscribing to our newsletter! Each edition is
-            packed with exclusive updates, insightful articles, and special
-            promotions tailored just for you. Be the first to know about our
-            latest offerings, upcoming events, and helpful tips to enhance your
-            experience.
-          </p>
-          <div className="flex items-center gap-2">
-            <Input type="email" placeholder="Enter your email address" />
-            <Button>Subscribe</Button>
-          </div>
         </div>
       </Container>
       <Separator />

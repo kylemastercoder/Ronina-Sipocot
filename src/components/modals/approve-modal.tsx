@@ -28,7 +28,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   return (
     <Modal
-      title="Are you sure you want to approve this appointment?"
+      title="Are you sure you want to approve this data?"
       description="This action cannot be undone."
       isOpen={isOpen}
       onClose={onClose}

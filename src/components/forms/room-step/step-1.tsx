@@ -48,22 +48,22 @@ const Step1 = ({
     {
       id: 1,
       className: "md:col-span-2",
-      thumbnail: step1Data?.imagesUrl[0] ?? "",
+      thumbnail: step1Data?.imagesUrl?.[0] ?? "", // Safe access to the first image
     },
     {
       id: 2,
       className: "col-span-1",
-      thumbnail: step1Data?.imagesUrl[1] ?? "",
+      thumbnail: step1Data?.imagesUrl?.[1] ?? "", // Safe access to the second image
     },
     {
       id: 3,
       className: "col-span-1",
-      thumbnail: step1Data?.imagesUrl[2] ?? "",
+      thumbnail: step1Data?.imagesUrl?.[2] ?? "", // Safe access to the third image
     },
     {
       id: 4,
       className: "md:col-span-2",
-      thumbnail: step1Data?.imagesUrl[3] ?? "",
+      thumbnail: step1Data?.imagesUrl?.[3] ?? "", // Safe access to the fourth image
     },
   ];
 

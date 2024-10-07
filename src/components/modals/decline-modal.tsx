@@ -28,7 +28,7 @@ const DeclineModal: React.FC<DeclineModalProps> = ({
 
   return (
     <Modal
-      title="Are you sure you want to decline this appointment?"
+      title="Are you sure you want to decline this data?"
       description="This action cannot be undone."
       isOpen={isOpen}
       onClose={onClose}

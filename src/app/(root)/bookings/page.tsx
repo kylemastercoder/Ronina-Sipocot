@@ -1,20 +1,18 @@
-
 import db from "@/lib/db";
 import React from "react";
 import { format } from "date-fns";
 import { BookingColumn } from "./components/column";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { formatPrice } from "@/lib/utils";
 import BookingClient from "./components/client";
 import BreadcrumbBanner from "@/components/globals/bread-crumb-banner";
 import Container from "@/components/globals/container";
+import { auth } from "@clerk/nextjs/server";
 
 const MyBookings = async () => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const { userId } = auth();
   const bookings = await db.roomAppointments.findMany({
     where: {
-      userId: user?.id,
+      userId: userId as string,
     },
     orderBy: {
       createdAt: "desc",

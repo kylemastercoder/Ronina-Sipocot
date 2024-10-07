@@ -118,3 +118,129 @@ export const deleteMenus = async (menuId: string) => {
     };
   }
 };
+
+export const orderMenu = async (
+  menuId: string,
+  quantity: number,
+  price: number,
+  userId: string
+) => {
+  if (!menuId || !quantity || !userId) {
+    return { error: "Menu ID, quantity, and user ID are required" };
+  }
+
+  try {
+    const order = await db.orderFood.create({
+      data: {
+        quantity,
+        price,
+        foodId: menuId,
+        userId,
+      },
+    });
+
+    return { success: true, order };
+  } catch (error) {
+    console.error("Error placing order:", error);
+    return {
+      error:
+        "An error occurred while placing the order. Please try again later.",
+    };
+  }
+};
+
+export const deleteOrderMenu = async (orderMenuId: string) => {
+  try {
+    await db.orderFood.delete({
+      where: {
+        id: orderMenuId,
+      },
+    });
+
+    return { success: "Order menu deleted successfully" };
+  } catch (error: any) {
+    return {
+      error: `Failed to delete order menu. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
+
+export const approveOrderMenu = async (id: string, quantity: number) => {
+  try {
+    // Step 1: Approve the order menu and retrieve the foodId
+    const orderMenu = await db.orderFood.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: "Confirmed",
+      },
+    });
+
+    // Step 2: Retrieve the current stock of the food item
+    const foodItem = await db.food.findUnique({
+      where: {
+        id: orderMenu.foodId,
+      },
+    });
+
+    if (!foodItem) {
+      throw new Error("Food item not found.");
+    }
+
+    // Step 3: Deduct the quantity from the current stock
+    const updatedStock = foodItem.stock - quantity;
+
+    // Step 4: Ensure stock doesn't go negative
+    if (updatedStock < 0) {
+      throw new Error("Insufficient stock to approve this order.");
+    }
+
+    // Step 5: Update the stock in the database
+    await db.food.update({
+      where: {
+        id: orderMenu.foodId,
+      },
+      data: {
+        stock: updatedStock,
+      },
+    });
+
+    return {
+      success: "Order menu approved successfully!",
+      orderMenu,
+    };
+  } catch (error: any) {
+    return {
+      error: `Failed to approve order menu. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
+
+export const declineOrderMenu = async (id: string) => {
+  try {
+    const orderMenu = await db.orderFood.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: "Declined",
+      },
+    });
+
+    return {
+      success: "Order menu declined successfully!",
+      orderMenu,
+    };
+  } catch (error: any) {
+    return {
+      error: `Failed to decline order menu. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};

@@ -28,6 +28,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   Appointments RoomAppointments[]
+  orderFood    OrderFood[]
 }
 
 model Admin {
@@ -86,6 +87,23 @@ model Food {
 
   caterings Catering[] @relation("CateringMenus")
   events    Events[]   @relation("EventMenus")
+
+  orderFood OrderFood[]
+}
+
+model OrderFood {
+  id        String   @id @unique @default(uuid())
+  quantity  Int
+  price     Float
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  foodId String
+  food   Food   @relation(fields: [foodId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Inclusions {
@@ -239,14 +257,16 @@ model EventsAddOns {
 }
 
 model RoomAppointments {
-  id        String   @id @unique @default(uuid())
-  checkIn   String
-  checkOut  String
-  guest     String
-  price     Float
-  status    String   @default("Pending")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @unique @default(uuid())
+  checkIn        String
+  checkOut       String
+  guest          String
+  price          Float
+  paymentMethod  String
+  proofOfPayment String?
+  status         String   @default("Pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

@@ -7,34 +7,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import db from "@/lib/db";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import React from "react";
 import ProfileForm from "@/components/forms/profile-form";
-import { redirect } from "next/navigation";
 import BreadcrumbBanner from "@/components/globals/bread-crumb-banner";
-
-async function getData(userId: string) {
-  const data = await db.user.findFirst({
-    where: {
-      id: userId,
-    },
-  });
-
-  return data;
-}
+import { auth } from "@clerk/nextjs/server";
 
 const Profile = async () => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-  if (!user || !user?.id) {
-    redirect("/");
-  }
-  const data = await getData(user?.id as string);
-  if (!data) {
-    redirect("/");
-  }
-
+  const {userId} = auth();
+  const data = await db.user.findFirst({
+    where: {
+      id: userId as string,
+    },
+  });
   return (
     <>
     <BreadcrumbBanner image="contact.webp" title="Profile" />
@@ -48,7 +33,7 @@ const Profile = async () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ProfileForm data={data} />
+            {data ? <ProfileForm data={data} /> : <p>Loading...</p>}
           </CardContent>
         </Card>
       </div>

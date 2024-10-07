@@ -37,6 +37,7 @@ const CateringCard: React.FC<CateringCardProps> = ({ data, index }) => {
     return () => clearTimeout(timer);
   }, [index]);
   const router = useRouter();
+  console.log("data", data);
   return (
     <>
       <Card
@@ -58,11 +59,20 @@ const CateringCard: React.FC<CateringCardProps> = ({ data, index }) => {
             <p className="text-sm my-1">
               From {formatPrice(data.features[0].price)} good for{" "}
               {data.features[0].numberOfPerson} pax <br />
-              <span className="capitalize font-semibold">
-                additional pax:
-              </span>{" "}
-              {formatPrice(data.features[1].price)}/pax
+              {data.features.length > 1 ? (
+                <>
+                  <span className="capitalize font-semibold">
+                    additional pax:
+                  </span>{" "}
+                  {formatPrice(data.features[1].price)}/pax
+                </>
+              ) : (
+                <span className="text-gray-500">
+                  No additional pax price available
+                </span>
+              )}
             </p>
+
             <Separator className="my-2" />
             <ul>
               <p className="font-semibold">Inclusions: </p>

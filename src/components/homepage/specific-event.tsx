@@ -30,7 +30,7 @@ interface SpecificEventProps {
 
 const SpecificEvent: React.FC<SpecificEventProps> = ({ event }) => {
   return (
-    <div className="flex flex-col h-screen w-full md:px-80 px-10 py-10">
+    <div className="flex flex-col h-full w-full xl:px-80 lg:px-20 md:px-20 px-10 py-10">
       <div className="flex justify-between mb-3">
         <div>
           <div className="flex items-center gap-x-1 mb-2 text-yellow-400">
@@ -72,7 +72,7 @@ const SpecificEvent: React.FC<SpecificEventProps> = ({ event }) => {
           <CarouselNext />
         </div>
       </Carousel>
-      <div className="grid md:grid-cols-4 grid-cols-1 mt-5 gap-4">
+      <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 mt-5 gap-4">
         <div className="md:col-span-3 flex flex-col">
           <p className="text-lg font-semibold mb-2 mt-2">Dining Menu</p>
           <div className="grid md:grid-cols-2 grid-cols-1 gap-3">

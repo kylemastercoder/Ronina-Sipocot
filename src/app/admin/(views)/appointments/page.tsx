@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { BookingColumn } from "./components/column";
 import { formatPrice } from "@/lib/utils";
 import BookingClient from "./components/client";
+import AppointmentCalendar from "./components/appointment-calendar";
 
 const MyBookings = async () => {
   const bookings = await db.roomAppointments.findMany({
@@ -15,6 +16,9 @@ const MyBookings = async () => {
       room: true,
       user: true,
     },
+    where: {
+      status: "Pending",
+    }
   });
 
   const formattedBookings: BookingColumn[] = bookings.map((item) => ({
@@ -28,6 +32,8 @@ const MyBookings = async () => {
     checkOut: format(item.checkOut, "MMMM dd, yyyy"),
     totalPayment: formatPrice(Number(item.price)),
     createdAt: format(item.createdAt, "MMMM dd, yyyy"),
+    paymentMethod: item.paymentMethod,
+    paymentNumber: item.proofOfPayment ?? "N/A",
     status: item.status,
   }));
   return (
@@ -39,6 +45,7 @@ const MyBookings = async () => {
         />
       </div>
       <BookingClient data={formattedBookings} />
+      <AppointmentCalendar />
     </div>
   );
 };

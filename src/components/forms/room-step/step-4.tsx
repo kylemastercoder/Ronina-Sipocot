@@ -42,7 +42,9 @@ const Step4 = ({
         step3Data.guest,
         userData?.id as string,
         roomData?.id as string,
-        step3Data.price
+        step3Data.price,
+        step3Data.paymentMethod,
+        step3Data.paymentNumber,
       );
 
       if (result.success) {
@@ -87,13 +89,13 @@ const Step4 = ({
               </p>
               <p>Email Address: {step2Data.email}</p>
               <p>
-                Address: {step2Data.houseNumber}, {step2Data.barangay},{" "}
-                {step2Data.municipality}, {step2Data.province},{" "}
-                {step2Data.region}
+                Address: {step2Data.address}
               </p>
               <p>
                 Status: <Badge>{step3Data.status}</Badge>
               </p>
+              <p>Payment Method: {step3Data.paymentMethod}</p>
+              <p>Payment Number: {step3Data.paymentNumber || "N/A"}</p>
               <p>Total Payment: {formatPrice(step3Data.price)}</p>
             </div>
             <div className="flex items-center mt-3 gap-3">

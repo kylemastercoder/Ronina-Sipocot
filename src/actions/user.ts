@@ -3,7 +3,6 @@
 
 import db from "@/lib/db";
 import { UpdateProfileValidation, UserSchema } from "@/lib/validators";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { z } from "zod";
 import bcryptjs from "bcryptjs";
 
@@ -49,12 +48,6 @@ export const updateProfile = async (
   values: z.infer<typeof UpdateProfileValidation>,
   id: string
 ) => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user) {
-    return { error: "No user found!" };
-  }
 
   const validatedField = UpdateProfileValidation.safeParse(values);
 

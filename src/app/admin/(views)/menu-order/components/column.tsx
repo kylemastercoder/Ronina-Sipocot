@@ -8,23 +8,19 @@ import Image from "next/image";
 import { CellAction } from "./cell-action";
 import { Badge } from "@/components/ui/badge";
 
-export type BookingColumn = {
+export type MenuOrderColumn = {
   id: string;
   name: string;
   email: string;
   imageUrl: string;
-  room: string;
-  guest: string;
-  checkIn: string;
-  paymentMethod: string;
-  paymentNumber: string;
-  checkOut: string;
-  totalPayment: string;
+  menu: string;
+  quantity: any;
+  price: any;
   status: string;
   createdAt: string;
 };
 
-export const columns: ColumnDef<BookingColumn>[] = [
+export const columns: ColumnDef<MenuOrderColumn>[] = [
   {
     accessorKey: "name",
     header: "Customer",
@@ -53,32 +49,16 @@ export const columns: ColumnDef<BookingColumn>[] = [
     ),
   },
   {
-    accessorKey: "room",
-    header: "Room",
+    accessorKey: "menu",
+    header: "Menu",
   },
   {
-    accessorKey: "guest",
-    header: "Guest",
+    accessorKey: "quantity",
+    header: "Quantity",
   },
   {
-    accessorKey: "checkIn",
-    header: "Check-in Date",
-  },
-  {
-    accessorKey: "checkOut",
-    header: "Check-out Date",
-  },
-  {
-    accessorKey: "totalPayment",
-    header: "Total Payment",
-  },
-  {
-    accessorKey: "paymentMethod",
-    header: "Payment Method",
-  },
-  {
-    accessorKey: "paymentNumber",
-    header: "Payment Number",
+    accessorKey: "price",
+    header: "Amount",
   },
   {
     accessorKey: "status",

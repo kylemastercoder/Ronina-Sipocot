@@ -264,10 +264,6 @@ export const Step2FormValidation = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   lastName: z.string().min(1, { message: "Last name is required" }),
   email: z.string().min(1, { message: "Email address is required" }),
-  phoneNumber: z.string().min(1, { message: "Phone number is required" }),
-  houseNumber: z.string().min(1, { message: "House number is required" }),
-  region: z.string().min(1, { message: "Region is required" }),
-  province: z.string().min(1, { message: "Province is required" }),
-  municipality: z.string().min(1, { message: "Municipality is required" }),
-  barangay: z.string().min(1, { message: "Barangay is required" }),
+  phone: z.string().min(1, { message: "Phone number is required" }),
+  address: z.string().min(1, { message: "Address is required" }),
 });

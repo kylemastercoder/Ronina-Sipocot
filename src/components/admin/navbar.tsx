@@ -29,7 +29,7 @@ const Navbar = () => {
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/employees", label: "Employees" },
     { href: "/admin/appointments", label: "Appointments" },
-    { href: "/admin/feedbacks", label: "Feedbacks" },
+    { href: "/admin/menu-order", label: "Orders" },
   ];
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">

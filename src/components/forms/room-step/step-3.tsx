@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatPrice } from "@/lib/utils";
+import Image from "next/image";
 
 interface Event {
   title: string;
@@ -49,6 +50,8 @@ const Step3 = ({
 }) => {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("Gcash");
+  const [paymentNumber, setPaymentNumber] = useState<string | null>(null);
   const [newEvent, setNewEvent] = useState<Event>({
     title: "",
     start: "",
@@ -131,7 +134,14 @@ const Step3 = ({
     newEvent.guest = guestCount;
     newEvent.price = Number(price);
 
-    localStorage.setItem("step3Data", JSON.stringify(newEvent));
+    // Update the newEvent object to include paymentMethod and paymentNumber
+    const eventWithPaymentDetails = {
+      ...newEvent,
+      paymentMethod, // Include the selected payment method
+      paymentNumber, // Include the entered payment number
+    };
+
+    localStorage.setItem("step3Data", JSON.stringify(eventWithPaymentDetails));
     setShowModal(false);
     toast.success("Event added successfully!");
   };
@@ -174,55 +184,94 @@ const Step3 = ({
         </Container>
       </div>
       <Modal
+        className="max-w-3xl"
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title="Appointment Details"
         description="Please fill in the details of the appointment"
       >
-        <form className="space-y-3" onSubmit={handleFormSubmit}>
-          <div className="space-y-1">
-            <Label>Room</Label>
-            <Input type="text" value={roomData?.name} readOnly />
-          </div>
-          <div className="space-y-1">
-            <Label>Check-In Date</Label>
-            <Input
-              type="text"
-              value={new Date(newEvent.start).toLocaleDateString()}
-              readOnly
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>Check-Out Date</Label>
-            <Input
-              type="text"
-              value={new Date(newEvent.end).toLocaleDateString()}
-              readOnly
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>Guest</Label>
-            <Select
-              defaultValue={selectedGuest}
-              onValueChange={handleGuestChange}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Guest" />
-              </SelectTrigger>
-              <SelectContent>
-                {roomData?.features.map((feature) => (
-                  <SelectItem
-                    key={feature.numberOfPerson}
-                    value={`${feature.numberOfPerson} - ${feature.price}`}
-                  >
-                    {feature.numberOfPerson} guest(s) - Price: {formatPrice(feature.price)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button type="submit">Submit</Button>
-        </form>
+        <div className="grid grid-cols-2">
+          <form className="space-y-3" onSubmit={handleFormSubmit}>
+            <div className="space-y-1">
+              <Label>Room</Label>
+              <Input type="text" value={roomData?.name} readOnly />
+            </div>
+            <div className="space-y-1">
+              <Label>Check-In Date</Label>
+              <Input
+                type="text"
+                value={new Date(newEvent.start).toLocaleDateString()}
+                readOnly
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Check-Out Date</Label>
+              <Input
+                type="text"
+                value={new Date(newEvent.end).toLocaleDateString()}
+                readOnly
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Guest</Label>
+              <Select
+                defaultValue={selectedGuest}
+                onValueChange={handleGuestChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Guest" />
+                </SelectTrigger>
+                <SelectContent>
+                  {roomData?.features.map((feature) => (
+                    <SelectItem
+                      key={feature.numberOfPerson}
+                      value={`${feature.numberOfPerson} - ${feature.price}`}
+                    >
+                      {feature.numberOfPerson} guest(s) - Price:{" "}
+                      {formatPrice(feature.price)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label>Payment Method</Label>
+              <Select
+                defaultValue={paymentMethod}
+                onValueChange={(value) => setPaymentMethod(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Payment Method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Gcash">Gcash</SelectItem>
+                  <SelectItem value="Maya">Maya</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label>
+                Gcash/Maya Number Used (For cash payment, please leave it as
+                blank)
+              </Label>
+              <Input
+                type="text"
+                value={paymentNumber ?? ""}
+                onChange={(e) => setPaymentNumber(e.target.value)}
+                placeholder="Enter Gcash/Maya Number"
+              />
+            </div>
+            <Button type="submit">Submit</Button>
+          </form>
+          <Image
+            src="/images/qr-gcash.jpg"
+            alt="Gcash"
+            width={300}
+            className="ml-10"
+            height={200}
+          />
+        </div>
       </Modal>
     </>
   );

@@ -1,11 +1,10 @@
 import db from "@/lib/db";
 import React from "react";
 import RoomAppointmentForm from "@/components/forms/room-appointment-form";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 const BookRooms = async ({ params }: { params: { roomId: string } }) => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const { userId } = auth();
 
   const room = await db.rooms.findUnique({
     where: {
@@ -23,9 +22,9 @@ const BookRooms = async ({ params }: { params: { roomId: string } }) => {
     },
   });
 
-  const userData = await db.user.findFirst({
+  const userData = await db.user.findUnique({
     where: {
-      id: user.id,
+      id: userId as string,
     },
   });
 
