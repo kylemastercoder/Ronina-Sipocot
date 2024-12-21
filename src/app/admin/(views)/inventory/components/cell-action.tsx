@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { EmployeeColumn } from "./column";
+import { InventoryColumn } from "./column";
 
 import {
   DropdownMenu,
@@ -11,26 +11,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Copy,
-  Edit,
-  MoreHorizontal,
-  Trash,
-  Wallet,
-} from "lucide-react";
+import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "sonner";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import axios from "axios";
 import AlertModal from "@/components/ui/alert-modal";
+import { deleteInventory } from "@/actions/inventory";
 
 interface CellActionProps {
-  data: EmployeeColumn;
+  data: InventoryColumn;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
-  const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const onCopy = (name: string) => {
@@ -39,18 +32,20 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   };
 
   const onDelete = async () => {
-    try {
-      setIsLoading(true);
-      await axios.delete(`/api/${params.storeId}/product/${data.id}`);
-      router.refresh();
-      toast.success("Product deleted successfully.");
-    } catch (error) {
-      toast.error("Something went wrong.");
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setOpen(false);
-    }
+    setIsLoading(true);
+    deleteInventory(data.id)
+      .then((data) => {
+        if (data.success) {
+          toast.success(data.success);
+          setOpen(false);
+          window.location.assign("/admin/inventory");
+        } else {
+          toast.error(data.error);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -71,13 +66,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => router.push(`/admin/employees/payroll/${data.id}`)}
-          >
-            <Wallet className="w-4 h-4 mr-2" />
-            Payroll
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => router.push(`/admin/employees/${data.id}`)}
+            onClick={() => router.push(`/admin/inventory/${data.id}`)}
           >
             <Edit className="w-4 h-4 mr-2" />
             Update

@@ -25,6 +25,22 @@ export const getAllRooms = async () => {
   }
 };
 
+export const getAllRoomsWithoutFeatures = async () => {
+  try {
+    const rooms = await db.rooms.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return { success: "Rooms displayed successfully!", rooms };
+  } catch (error: any) {
+    return {
+      error: `Failed to display room. Please try again. ${error.message || ""}`,
+    };
+  }
+};
+
 export const getFeaturedRooms = async () => {
   try {
     const rooms = await db.rooms.findMany({

@@ -12,8 +12,6 @@ import { Modal } from "@/components/ui/modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RoomFeature, Rooms } from "@prisma/client";
-import { getRoomAppointment } from "@/actions/appointment";
 import { toast } from "sonner";
 import {
   Select,
@@ -24,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
+import { EventWithFeatures } from "../event-appointment-form";
+import { getEventAppointment } from "@/actions/events";
 
 interface Event {
   title: string;
@@ -35,18 +35,14 @@ interface Event {
   price?: number;
 }
 
-interface RoomsWithFeatures extends Rooms {
-  features: RoomFeature[];
-}
-
 const Step3 = ({
   nextStep,
   prevStep,
-  roomData,
+  eventData,
 }: {
   nextStep: () => void;
   prevStep: () => void;
-  roomData: RoomsWithFeatures | null;
+  eventData: EventWithFeatures | null;
 }) => {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -56,7 +52,7 @@ const Step3 = ({
     title: "",
     start: "",
     end: "",
-    room: roomData?.name || "",
+    room: eventData?.name || "",
     guest: "",
     status: "Pending",
   });
@@ -65,11 +61,11 @@ const Step3 = ({
   // Fetch existing events from the database when the component mounts
   useEffect(() => {
     const fetchEvents = async () => {
-      const data = await getRoomAppointment();
-      if (data.roomAppointment) {
+      const data = await getEventAppointment();
+      if (data.eventAppointment) {
         setAllEvents(
-          data.roomAppointment.map((event: any) => ({
-            title: `Room: ${event.room}, Guests: ${event.guest}`,
+          data.eventAppointment.map((event: any) => ({
+            title: `Event: ${event.room}, Guests: ${event.guest}`,
             start: new Date(event.checkIn),
             end: new Date(event.checkOut),
             room: event.room,
@@ -120,7 +116,7 @@ const Step3 = ({
     setAllEvents((prevEvents) => [
       ...prevEvents,
       {
-        title: `Room: ${newEvent.room}, Guests: ${newEvent.guest}`,
+        title: `Event: ${newEvent.room}, Guests: ${newEvent.guest}`,
         start: newEvent.start,
         end: newEvent.end,
         room: newEvent.room,
@@ -196,8 +192,8 @@ const Step3 = ({
         <div className="grid grid-cols-2">
           <form className="space-y-3" onSubmit={handleFormSubmit}>
             <div className="space-y-1">
-              <Label>Room</Label>
-              <Input type="text" value={roomData?.name} readOnly />
+              <Label>Event</Label>
+              <Input type="text" value={eventData?.name} readOnly />
             </div>
             <div className="space-y-1">
               <Label>Check-In Date</Label>
@@ -225,7 +221,7 @@ const Step3 = ({
                   <SelectValue placeholder="Select Guest" />
                 </SelectTrigger>
                 <SelectContent>
-                  {roomData?.features.map((feature) => (
+                  {eventData?.features.map((feature) => (
                     <SelectItem
                       key={feature.numberOfPerson}
                       value={`${feature.numberOfPerson} - ${feature.price}`}

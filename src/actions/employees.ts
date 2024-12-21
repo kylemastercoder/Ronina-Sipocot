@@ -6,9 +6,26 @@ import {
   AttendanceFormValidation,
   EmployeeFormValidation,
   PayrollFormValidation,
-  ScheduleFormValidation,
 } from "@/lib/validators";
 import { z } from "zod";
+
+export const getAllEmployees = async () => {
+  try {
+    const employees = await db.employees.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return { success: "Employeed displayed successfully!", employees };
+  } catch (error: any) {
+    return {
+      error: `Failed to display employee. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
 
 export const createEmployee = async (
   values: z.infer<typeof EmployeeFormValidation>
@@ -137,24 +154,20 @@ export const createAttendance = async (
 };
 
 export const createSchedule = async (
-  values: z.infer<typeof ScheduleFormValidation>,
+  roomId: string,
+  date: string,
   employeeId: string
 ) => {
-  const validatedField = ScheduleFormValidation.safeParse(values);
-
-  if (!validatedField.success) {
-    const errors = validatedField.error.errors.map((err) => err.message);
-    return { error: `Validation Error: ${errors.join(", ")}` };
+  if (!roomId || !date || !employeeId) {
+    return { error: "Please provide all required fields" };
   }
-
-  const { room, scheduleDate } = validatedField.data;
 
   try {
     await db.employeeSchedule.create({
       data: {
         employeeId,
-        date: scheduleDate,
-        roomId: room,
+        date: date,
+        roomId: roomId,
         status: "Pending",
       },
     });
@@ -163,6 +176,51 @@ export const createSchedule = async (
   } catch (error: any) {
     return {
       error: `Failed to create schedule. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
+
+export const updateSchedule = async (
+  scheduleId: string,
+  assignedRoom: string,
+  date: string,
+  employeeId: string
+) => {
+  try {
+    await db.employeeSchedule.update({
+      where: { id: scheduleId },
+      data: {
+        date,
+        roomId: assignedRoom,
+        employeeId,
+      },
+    });
+
+    return { success: "Schedule updated successfully" };
+  } catch (error: any) {
+    return {
+      error: `Failed to update schedule. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
+
+export const getAllSchedules = async () => {
+  try {
+    const schedules = await db.employeeSchedule.findMany({
+      include: {
+        room: true,
+        employee: true,
+      },
+    });
+
+    return { success: "Schedules displayed successfully!", schedules };
+  } catch (error: any) {
+    return {
+      error: `Failed to display schedules. Please try again. ${
         error.message || ""
       }`,
     };

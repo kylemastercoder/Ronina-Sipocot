@@ -45,7 +45,7 @@ const SpecificEvent: React.FC<SpecificEventProps> = ({ event }) => {
             <Badge>{event?.type}</Badge>
           </div>
         </div>
-        <Button>Book Now</Button>
+        <Button onClick={() => window.location.assign(`/event-booking/${event?.id}`)}>Book Now</Button>
       </div>
       <Carousel className="w-full mt-5">
         <p className="text-lg font-semibold mb-2">Inclusions</p>

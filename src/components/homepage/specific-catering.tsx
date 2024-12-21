@@ -53,7 +53,7 @@ const SpecificCatering: React.FC<SpecificCateringProps> = ({
             <Badge>{catering?.type}</Badge>
           </div>
         </div>
-        <Button>Book Now</Button>
+        <Button onClick={() => window.location.assign(`/catering-booking/${catering?.id}`)}>Book Now</Button>
       </div>
       <Carousel className="w-full mt-5">
         <p className="text-lg font-semibold mb-2">Inclusions</p>

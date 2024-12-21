@@ -27,148 +27,33 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import db from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
+import { BarChartComponent } from "./bar-chart";
+import ScheduleCalendar from "../schedule/page";
 
 const AdminDashboard = async () => {
-  const currentDate = new Date();
+  const [totalAppointments, totalCustomers, totalRooms, totalMenus] =
+    await Promise.all([
+      db.roomAppointments.findMany({
+        where: { status: "Confirmed" },
+      }),
+      db.user.findMany(),
+      db.rooms.findMany(),
+      db.food.findMany(),
+    ]);
 
-  const firstDayOfCurrentMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1
-  );
-
-  const firstDayOfNextMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    1
-  );
-
-  const firstDayOfLastMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() - 1,
-    1
-  );
-
-  const lastDayOfLastMonth = firstDayOfCurrentMonth;
-
-  // Fetch data for the current and last month
-  const [
-    currentMonthAppointments,
-    lastMonthAppointments,
-    currentMonthCustomers,
-    lastMonthCustomers,
-    currentMonthRooms,
-    lastMonthRooms,
-    currentMonthMenus,
-    lastMonthMenus,
-  ] = await Promise.all([
-    db.roomAppointments.findMany({
-      where: {
-        status: "Confirmed",
-        createdAt: {
-          gte: firstDayOfCurrentMonth,
-          lt: firstDayOfNextMonth,
-        },
-      },
-    }),
-    db.roomAppointments.findMany({
-      where: {
-        status: "Confirmed",
-        createdAt: {
-          gte: firstDayOfLastMonth,
-          lt: lastDayOfLastMonth,
-        },
-      },
-    }),
-    db.user.findMany({
-      where: {
-        createdAt: {
-          gte: firstDayOfCurrentMonth,
-          lt: firstDayOfNextMonth,
-        },
-      },
-    }),
-    db.user.findMany({
-      where: {
-        createdAt: {
-          gte: firstDayOfLastMonth,
-          lt: lastDayOfLastMonth,
-        },
-      },
-    }),
-    db.rooms.findMany({
-      where: {
-        createdAt: {
-          gte: firstDayOfCurrentMonth,
-          lt: firstDayOfNextMonth,
-        },
-      },
-    }),
-    db.rooms.findMany({
-      where: {
-        createdAt: {
-          gte: firstDayOfLastMonth,
-          lt: lastDayOfLastMonth,
-        },
-      },
-    }),
-    db.food.findMany({
-      where: {
-        createdAt: {
-          gte: firstDayOfCurrentMonth,
-          lt: firstDayOfNextMonth,
-        },
-      },
-    }),
-    db.food.findMany({
-      where: {
-        createdAt: {
-          gte: firstDayOfLastMonth,
-          lt: lastDayOfLastMonth,
-        },
-      },
-    }),
-  ]);
-
-  // Calculate total revenue for the current and last month
-  const currentMonthRevenue = currentMonthAppointments.reduce(
-    (acc, appointment) => acc + appointment.price,
-    0
-  );
-  const lastMonthRevenue = lastMonthAppointments.reduce(
+  const totalRevenue = totalAppointments.reduce(
     (acc, appointment) => acc + appointment.price,
     0
   );
 
-  // Calculate percentage change for revenue
-  const revenuePercentageChange =
-    lastMonthRevenue > 0
-      ? ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
-      : 0;
+  // Total Customers
+  const totalCustomersCount = totalCustomers.length;
 
-  // Calculate percentage change for customers
-  const customersPercentageChange =
-    lastMonthCustomers.length > 0
-      ? ((currentMonthCustomers.length - lastMonthCustomers.length) /
-          lastMonthCustomers.length) *
-        100
-      : 0;
+  // Total Rooms
+  const totalRoomsCount = totalRooms.length;
 
-  // Calculate percentage change for rooms
-  const roomsPercentageChange =
-    lastMonthRooms.length > 0
-      ? ((currentMonthRooms.length - lastMonthRooms.length) /
-          lastMonthRooms.length) *
-        100
-      : 0;
-
-  // Calculate percentage change for menus
-  const menusPercentageChange =
-    lastMonthMenus.length > 0
-      ? ((currentMonthMenus.length - lastMonthMenus.length) /
-          lastMonthMenus.length) *
-        100
-      : 0;
+  // Total Dining Menus
+  const totalMenusCount = totalMenus.length;
 
   const recentTransactions = await db.roomAppointments.findMany({
     take: 5,
@@ -201,12 +86,8 @@ const AdminDashboard = async () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatPrice(currentMonthRevenue)}
+              {formatPrice(totalRevenue)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {revenuePercentageChange >= 0 ? "+" : "-"}
-              {Math.abs(revenuePercentageChange).toFixed(1)}% from last month
-            </p>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-1">
@@ -215,13 +96,7 @@ const AdminDashboard = async () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {currentMonthCustomers.length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {customersPercentageChange >= 0 ? "+" : "-"}
-              {Math.abs(customersPercentageChange).toFixed(1)}% from last month
-            </p>
+            <div className="text-2xl font-bold">{totalCustomersCount}</div>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-2">
@@ -230,11 +105,7 @@ const AdminDashboard = async () => {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{currentMonthRooms.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {roomsPercentageChange >= 0 ? "+" : "-"}
-              {Math.abs(roomsPercentageChange).toFixed(1)}% from last month
-            </p>
+            <div className="text-2xl font-bold">{totalRoomsCount}</div>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-3">
@@ -243,13 +114,13 @@ const AdminDashboard = async () => {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{currentMonthMenus.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {menusPercentageChange >= 0 ? "+" : "-"}
-              {Math.abs(menusPercentageChange).toFixed(1)}% from last month
-            </p>
+            <div className="text-2xl font-bold">{totalMenusCount}</div>
           </CardContent>
         </Card>
+      </div>
+      <div className="grid md:gap-8 gap-4 md:grid-cols-2 grid-cols-1">
+      <BarChartComponent />
+      <ScheduleCalendar />
       </div>
       <div className="grid gap-4 h-full md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
         <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">

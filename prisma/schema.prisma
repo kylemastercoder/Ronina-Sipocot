@@ -27,8 +27,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Appointments RoomAppointments[]
-  orderFood    OrderFood[]
+  Appointments         RoomAppointments[]
+  orderFood            OrderFood[]
+  cateringAppointments CateringAppointments[]
+  eventAppointments    EventAppointments[]
 }
 
 model Admin {
@@ -124,10 +126,11 @@ model Catering {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  inclusions Inclusions[]      @relation("CateringInclusions")
-  features   CateringFeature[]
-  menus      Food[]            @relation("CateringMenus")
-  addons     AddOns[]
+  inclusions           Inclusions[]           @relation("CateringInclusions")
+  features             CateringFeature[]
+  menus                Food[]                 @relation("CateringMenus")
+  addons               AddOns[]
+  cateringAppointments CateringAppointments[]
 }
 
 model CateringFeature {
@@ -232,10 +235,11 @@ model Events {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  inclusions EventsInclusions[] @relation("EventsInclusions")
-  features   EventsFeature[]
-  menus      Food[]             @relation("EventMenus")
-  addons     EventsAddOns[]
+  inclusions                EventsInclusions[]  @relation("EventsInclusions")
+  features                  EventsFeature[]
+  menus                     Food[]              @relation("EventMenus")
+  addons                    EventsAddOns[]
+  eventCateringAppointments EventAppointments[]
 }
 
 model EventsFeature {
@@ -273,4 +277,61 @@ model RoomAppointments {
 
   roomId String
   room   Rooms  @relation(fields: [roomId], references: [id])
+}
+
+model CateringAppointments {
+  id             String   @id @unique @default(uuid())
+  checkIn        String
+  checkOut       String
+  guest          String
+  price          Float
+  paymentMethod  String
+  proofOfPayment String?
+  status         String   @default("Pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  cateringId String
+  catering   Catering @relation(fields: [cateringId], references: [id])
+}
+
+model EventAppointments {
+  id             String   @id @unique @default(uuid())
+  checkIn        String
+  checkOut       String
+  guest          String
+  price          Float
+  paymentMethod  String
+  proofOfPayment String?
+  status         String   @default("Pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  eventId String
+  event   Events @relation(fields: [eventId], references: [id])
+}
+
+model Inventory {
+  id        String   @id @unique @default(uuid())
+  name      String
+  type      String
+  stock     String
+  status    String   @default("Available")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @unique @default(uuid())
+  title     String
+  message   String
+  status    String   @default("Unread")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

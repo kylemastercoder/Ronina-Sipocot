@@ -18,7 +18,7 @@ export type BookingColumn = {
 export const columns: ColumnDef<BookingColumn>[] = [
   {
     accessorKey: "room",
-    header: "Room",
+    header: "Type",
   },
   {
     accessorKey: "guest",

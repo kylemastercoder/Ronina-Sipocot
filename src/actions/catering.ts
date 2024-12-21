@@ -29,6 +29,28 @@ export const getAllCaterings = async () => {
   }
 };
 
+export const getCateringAppointment = async () => {
+  try {
+    const cateringAppointment = await db.cateringAppointments.findMany({
+      include: {
+        user: true,
+        catering: true,
+      },
+    });
+
+    return {
+      success: "Catering appointments displayed successfully!",
+      cateringAppointment,
+    };
+  } catch (error: any) {
+    return {
+      error: `Failed to display catering appointments. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
+
 export const createInclusions = async (inclusion: string) => {
   if (!inclusion) {
     return { error: "Inclusion is required" };

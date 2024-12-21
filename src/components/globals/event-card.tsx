@@ -56,12 +56,12 @@ const EventCard: React.FC<EventCardProps> = ({ data, index }) => {
               <Badge variant="secondary">Available</Badge>
             </div>
             <p className="text-sm my-1">
-              From {formatPrice(data.features[0].price)} good for{" "}
-              {data.features[0].numberOfPerson} pax <br />
+              From {formatPrice(data.features[0]?.price)} good for{" "}
+              {data.features[0]?.numberOfPerson} pax <br />
               <span className="capitalize font-semibold">
                 additional pax:
               </span>{" "}
-              {formatPrice(data.features[1].price)}/pax
+              {formatPrice(data.features[1]?.price)}/pax
             </p>
             <Separator className="my-2" />
             <ul>

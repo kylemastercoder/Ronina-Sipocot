@@ -267,3 +267,10 @@ export const Step2FormValidation = z.object({
   phone: z.string().min(1, { message: "Phone number is required" }),
   address: z.string().min(1, { message: "Address is required" }),
 });
+
+export const InventoryFormValidation = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  type: z.string().min(1, { message: "Type is required" }),
+  stock: z.string().min(1, { message: "Stock is required" }),
+  status: z.string().min(1, { message: "Status is required" }),
+});

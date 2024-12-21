@@ -29,6 +29,28 @@ export const getAllEvents = async () => {
   }
 };
 
+export const getEventAppointment = async () => {
+  try {
+    const eventAppointment = await db.eventAppointments.findMany({
+      include: {
+        user: true,
+        event: true,
+      },
+    });
+
+    return {
+      success: "Event appointments displayed successfully!",
+      eventAppointment,
+    };
+  } catch (error: any) {
+    return {
+      error: `Failed to display event appointments. Please try again. ${
+        error.message || ""
+      }`,
+    };
+  }
+};
+
 export const createInclusions = async (inclusion: string) => {
   if (!inclusion) {
     return { error: "Inclusion is required" };
